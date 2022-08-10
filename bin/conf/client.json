@@ -1,3 +1,4 @@
 {
-	"LoginAddr": "localhost:20001"
+	"LoginAddr": "localhost:20001",
+	"ConsoleStdin": true
 }
