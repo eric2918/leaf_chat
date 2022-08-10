@@ -14,6 +14,7 @@ func init() {
 	msg.Processor.SetHandler(&msg.F2C_LeaveRoom{}, handleLeaveRoom)
 	msg.Processor.SetHandler(&msg.F2C_SendMsg{}, handleSendMsg)
 	msg.Processor.SetHandler(&msg.F2C_MsgList{}, handleMsgList)
+	msg.Processor.SetHandler(&msg.F2C_Broadcast{}, handleBroadcast)
 }
 
 func showMsgList(msgList []*msg.ChatMsg) {
@@ -112,4 +113,14 @@ func handleSendMsg(args []interface{}) {
 func handleMsgList(args []interface{}) {
 	recvMsg := args[0].(*msg.F2C_MsgList)
 	showMsgList(recvMsg.MsgList)
+}
+
+func handleBroadcast(args []interface{}) {
+	resp := args[0].(*msg.F2C_Broadcast)
+	if resp.Err != "" {
+		log.Error("broadcast msg is error: %v", resp.Err)
+		return
+	}
+
+	log.Release("broadcast msg is success")
 }
