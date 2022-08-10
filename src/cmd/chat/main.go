@@ -6,7 +6,7 @@ import (
 	"leaf_chat/conf"
 	"leaf_chat/leaf"
 	"leaf_chat/leaf/module"
-	"leaf_chat/tools/gob"
+	"leaf_chat/pkg/gob"
 )
 
 func main() {

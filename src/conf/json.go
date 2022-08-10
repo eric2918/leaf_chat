@@ -17,6 +17,7 @@ var Server struct {
 	TCPAddr     string
 	MaxConnNum  int
 	ConsolePort int
+	ConsoleStdin bool
 	ProfilePath string
 
 	MongodbAddr       string
@@ -26,6 +27,10 @@ var Server struct {
 	ListenAddr      string
 	ConnAddrs       map[string]string
 	PendingWriteNum int
+
+	RedisAddr     string
+	RedisPassword string
+	RedisDb       int
 
 	RoomModuleCount int
 	LoginAddr       string
@@ -53,6 +58,7 @@ func Init() {
 	lconf.LogPath = Server.LogPath
 	lconf.LogFlag = LogFlag
 	lconf.ConsolePort = Server.ConsolePort
+	lconf.ConsoleStdin = Server.ConsoleStdin
 	lconf.ProfilePath = Server.ProfilePath
 	lconf.ServerName = Server.ServerName
 	lconf.ListenAddr = Server.ListenAddr

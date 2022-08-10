@@ -27,6 +27,7 @@ func init() {
 	skeleton.RegisterCommand("enterRoom", "enter room: input roomName", enterRoom)
 	skeleton.RegisterCommand("leaveRoom", "enter room: input roomName", leaveRoom)
 	skeleton.RegisterCommand("sendMsg", "send msg to room: input roomName, msgContent", sendMsg)
+	skeleton.RegisterCommand("broadcast", "send broadcast msg", broadcast)
 }
 
 func login(args []interface{}) (ret interface{}, err error) {
@@ -101,6 +102,25 @@ func sendMsg(args []interface{}) (ret interface{}, err error) {
 	msgContent := args[1].(string)
 	msgContent = fmt.Sprintf("%v say: %v", userData.UserName, msgContent)
 	msg := &msg.C2F_SendMsg{RoomName: roomName, Msg: []byte(msgContent)}
+	Client.WriteMsg(msg)
+	return
+}
+
+func broadcast(args []interface{}) (ret interface{}, err error) {
+	ret = ""
+	if len(args) < 1 {
+		err = errors.New("args len is less than 1")
+		return
+	}
+
+	if Client == nil {
+		err = errors.New("net is disconnect, please input login cmd")
+		return
+	}
+
+	msgContent := args[0].(string)
+	msgContent = fmt.Sprintf("%v say: %v", userData.UserName, msgContent)
+	msg := &msg.C2F_Broadcast{Msg: []byte(msgContent)}
 	Client.WriteMsg(msg)
 	return
 }

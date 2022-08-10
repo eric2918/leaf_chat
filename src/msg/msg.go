@@ -24,10 +24,13 @@ func init() {
 	Processor.Register(&C2F_SendMsg{})
 	Processor.Register(&F2C_SendMsg{})
 	Processor.Register(&F2C_MsgList{})
+	Processor.Register(&C2F_Broadcast{})
+	Processor.Register(&F2C_Broadcast{})
 }
 
 type ChatMsg struct {
 	RoomName   string
+	Username   string
 	UserId     bson.ObjectId
 	MsgTime    int64
 	MsgContent []byte
@@ -94,4 +97,12 @@ type F2C_SendMsg struct {
 
 type F2C_MsgList struct {
 	MsgList []*ChatMsg
+}
+
+type C2F_Broadcast struct {
+	Msg []byte
+}
+
+type F2C_Broadcast struct {
+	Err string
 }

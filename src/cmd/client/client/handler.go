@@ -19,7 +19,12 @@ func init() {
 func showMsgList(msgList []*msg.ChatMsg) {
 	for _, msg := range msgList {
 		strTime := time.Unix(msg.MsgTime, 0).Format("2006-01-02 15:04:05")
-		log.Release("%v : %v room: %v", strTime, msg.RoomName, string(msg.MsgContent))
+		if msg.RoomName != "" {
+			log.Release("%v : %v room: %v", strTime, msg.RoomName, string(msg.MsgContent))
+		} else {
+			log.Release("%v : %v", strTime, string(msg.MsgContent))
+		}
+
 	}
 }
 

@@ -1,11 +1,13 @@
 package internal
 
 import (
+	"fmt"
 	"leaf_chat/conf"
 	"leaf_chat/leaf/cluster"
 	"leaf_chat/leaf/gate"
 	"leaf_chat/leaf/log"
 	"leaf_chat/msg"
+	"time"
 
 	"gopkg.in/mgo.v2/bson"
 )
@@ -32,6 +34,8 @@ func init() {
 	handleRpc("AddClusterClient", AddClusterClient)
 	handleRpc("RemoveClusterClient", RemoveClusterClient)
 	handleRpc("BroadcastChatMsg", BroadcastChatMsg)
+
+	handleRpc("Broadcast", Broadcast)
 }
 
 func KickAccount(args []interface{}) {
@@ -73,22 +77,54 @@ func AccountOffline(args []interface{}) {
 	}
 }
 
+var onlineUserMap map[bson.ObjectId]gate.Agent
+
 func UserOnline(args []interface{}) {
 	userId := args[0].(bson.ObjectId)
 	agent := args[1].(gate.Agent)
 	userAgentMap[userId] = agent
 	log.Debug("%v user is online", userId)
+
+	if onlineUserMap == nil{
+		onlineUserMap = make(map[bson.ObjectId]gate.Agent)
+	}
+
+	onlineUserMap[userId] = agent
+
+	// 通过网关服务器广播
+	msgContent := []byte(fmt.Sprintf("%s online...",userId))
+	cluster.Go("world", "Broadcast", msgContent)
 }
 
 func UserOffline(args []interface{}) {
 	userId := args[0].(bson.ObjectId)
 	agent := args[1].(gate.Agent)
 	oldAgent, ok := userAgentMap[userId]
-	if ok && agent == oldAgent {
-		delete(userAgentMap, userId)
-		log.Debug("%v user is offline", userId)
+	if !ok || agent != oldAgent {
+		return
+	}
+
+	delete(userAgentMap, userId)
+	log.Debug("%v user is offline", userId)
+
+
+	delete(onlineUserMap, userId)
+
+	// 通过网关服务器广播
+	msgContent := []byte(fmt.Sprintf("%s offline...",userId))
+	cluster.Go("world", "Broadcast", msgContent)
+}
+
+func Broadcast(args []interface{}) {
+	msgContent := args[0].([]byte)
+	chatMsg := &msg.ChatMsg{MsgTime: time.Now().Unix(), MsgContent: msgContent}
+	for userId, agent := range onlineUserMap {
+		chatMsg.UserId = userId
+		sendMsg := &msg.F2C_MsgList{MsgList: []*msg.ChatMsg{chatMsg}}
+		agent.WriteMsg(sendMsg)
 	}
 }
+
 
 func GetFrontInfo(args []interface{}) ([]interface{}, error) {
 	return []interface{}{clientCount, conf.Server.MaxConnNum, conf.Server.TCPAddr}, nil

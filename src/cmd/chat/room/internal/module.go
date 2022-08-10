@@ -152,11 +152,11 @@ func (r *RoomInfo) SendMsg(userId bson.ObjectId, msgContent []byte) error {
 	}
 
 	msg := &msg.ChatMsg{RoomName: r.name, UserId: userId, MsgTime: time.Now().Unix(), MsgContent: msgContent}
-	r.msgList = append(r.msgList, msg)
-	msgLen := len(r.msgList)
-	if msgLen > conf.MaxRoomMsgLen {
-		r.msgList = r.msgList[msgLen-conf.MaxRoomMsgLen:]
-	}
+	//r.msgList = append(r.msgList, msg)
+	//msgLen := len(r.msgList)
+	//if msgLen > conf.MaxRoomMsgLen {
+	//	r.msgList = r.msgList[msgLen-conf.MaxRoomMsgLen:]
+	//}
 
 	serverUserMap := map[string][]bson.ObjectId{}
 	for userId, serverName := range r.userServerMap {

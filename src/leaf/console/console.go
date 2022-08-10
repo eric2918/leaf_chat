@@ -3,18 +3,21 @@ package console
 import (
 	"bufio"
 	"leaf_chat/leaf/conf"
+	"leaf_chat/leaf/log"
 	"leaf_chat/leaf/network"
 	"math"
+	"os"
 	"strconv"
 	"strings"
-	"leaf_chat/leaf/log"
-	"os"
 )
 
 var server *network.TCPServer
 
 func Init() {
-	go run()
+	if conf.ConsoleStdin{
+		go run()
+	}
+
 
 	if conf.ConsolePort != 0 {
 		server = new(network.TCPServer)

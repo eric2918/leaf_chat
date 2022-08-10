@@ -20,6 +20,7 @@ func init() {
 	msg.Processor.SetHandler(&msg.C2F_EnterRoom{}, handleEnterRoom)
 	msg.Processor.SetHandler(&msg.C2F_LeaveRoom{}, handleLeaveRoom)
 	msg.Processor.SetHandler(&msg.C2F_SendMsg{}, handleSendMsg)
+	msg.Processor.SetHandler(&msg.C2F_Broadcast{}, handleBroadcast)
 }
 
 func onAgentInit(agent gate.Agent) {
@@ -206,5 +207,14 @@ func handleSendMsg(args []interface{}) {
 	if err != nil {
 		sendMsg.Err = err.Error()
 	}
+	agent.WriteMsg(sendMsg)
+}
+
+func handleBroadcast(args []interface{}) {
+	resp := args[0].(*msg.C2F_Broadcast)
+	agent := args[1].(gate.Agent)
+
+	sendMsg := &msg.F2C_Broadcast{}
+	cluster.Go("world", "Broadcast", resp.Msg)
 	agent.WriteMsg(sendMsg)
 }

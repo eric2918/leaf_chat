@@ -50,6 +50,8 @@ func init() {
 	handleRpc("GetRoomInfo", GetRoomInfo)
 	handleRpc("DestroyRoom", DestroyRoom)
 	handleRpc("AccountOffline", AccountOffline)
+
+	handleRpc("Broadcast", Broadcast)
 }
 
 func NewServerAgent(args []interface{}) {
@@ -188,5 +190,12 @@ func AccountOffline(args []interface{}) {
 	if _, ok := accountFrontMap[accountId]; ok {
 		delete(accountFrontMap, accountId)
 		log.Debug("%v account is offline", accountId)
+	}
+}
+
+func Broadcast(args []interface{}) {
+	msgContent := args[0].([]byte)
+	for serverName, _ := range frontInfoMap {
+		cluster.Go(serverName, "Broadcast", msgContent)
 	}
 }
