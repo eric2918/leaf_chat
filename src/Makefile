@@ -24,7 +24,7 @@ logs:
 
 .PHONY: startup
 startup:logs
-	./build/tartup.sh
+	./build/startup.sh
 
 .PHONY: shutdown
 shutdown:
