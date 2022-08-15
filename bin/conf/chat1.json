@@ -1,7 +1,7 @@
 {
 	"LogLevel": "debug",
 	"LogPath": "",
-	"RoomModuleCount": 2,
+	"RoomModuleCount": 1,
 
 	"MongodbAddr": "localhost",
 	"MongodbSessionNum": 100,
