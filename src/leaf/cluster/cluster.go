@@ -7,6 +7,7 @@ import (
 	"leaf_chat/leaf/log"
 	"leaf_chat/leaf/network"
 	lgob "leaf_chat/leaf/network/gob"
+	"leaf_chat/leaf/util"
 	"math"
 	"net"
 	"reflect"
@@ -34,7 +35,7 @@ var (
 func Init() {
 	if conf.ListenAddr != "" {
 		server = new(network.TCPServer)
-		server.Addr = conf.ListenAddr
+		server.Addr = util.Addr(conf.ListenAddr)
 		server.MaxConnNum = int(math.MaxInt32)
 		server.PendingWriteNum = conf.PendingWriteNum
 		server.LenMsgLen = 4

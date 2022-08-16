@@ -3,11 +3,12 @@ package gate
 import (
 	"leaf_chat/leaf/chanrpc"
 	"leaf_chat/leaf/log"
+	"leaf_chat/leaf/module"
 	"leaf_chat/leaf/network"
+	"leaf_chat/leaf/util"
 	"net"
 	"reflect"
 	"time"
-	"leaf_chat/leaf/module"
 )
 
 type Gate struct {
@@ -33,8 +34,8 @@ type Gate struct {
 	TimerDispatcherLen int
 	AsynCallLen        int
 	ChanRPCLen         int
-	OnAgentInit 	   func(Agent)
-	OnAgentDestroy 	   func(Agent)
+	OnAgentInit        func(Agent)
+	OnAgentDestroy     func(Agent)
 }
 
 func (gate *Gate) Run(closeSig chan bool) {
@@ -61,7 +62,7 @@ func (gate *Gate) Run(closeSig chan bool) {
 	var wsServer *network.WSServer
 	if gate.WSAddr != "" {
 		wsServer = new(network.WSServer)
-		wsServer.Addr = gate.WSAddr
+		wsServer.Addr = util.Addr(gate.WSAddr)
 		wsServer.MaxConnNum = gate.MaxConnNum
 		wsServer.PendingWriteNum = gate.PendingWriteNum
 		wsServer.MaxMsgLen = gate.MaxMsgLen
@@ -76,7 +77,7 @@ func (gate *Gate) Run(closeSig chan bool) {
 	var tcpServer *network.TCPServer
 	if gate.TCPAddr != "" {
 		tcpServer = new(network.TCPServer)
-		tcpServer.Addr = gate.TCPAddr
+		tcpServer.Addr = util.Addr(gate.TCPAddr)
 		tcpServer.MaxConnNum = gate.MaxConnNum
 		tcpServer.PendingWriteNum = gate.PendingWriteNum
 		tcpServer.LenMsgLen = gate.LenMsgLen
@@ -122,7 +123,7 @@ func (a *agent) Run() {
 		closeSig <- true
 	}()
 
-	handleMsgData := func(args []interface{}) (error) {
+	handleMsgData := func(args []interface{}) error {
 		if a.gate.Processor != nil {
 			data := args[0].([]byte)
 			msg, err := a.gate.Processor.Unmarshal(data)
